@@ -1,0 +1,5 @@
+openreview-py>=1.40
+arxiv>=2.1
+anthropic>=0.40
+requests>=2.31
+google-genai>=1.0

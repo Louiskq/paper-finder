@@ -1,0 +1,10 @@
+# OpenReview venue IDs — one per line, # to comment out.
+# Find them in the group URL at https://openreview.net/venues
+# Only 2023-onward venues are on the v2 API this script uses.
+ICLR.cc/2026/Conference
+ICLR.cc/2025/Conference
+NeurIPS.cc/2025/Conference
+ICML.cc/2025/Conference
+# Specialist venues are small and worth fetching unfiltered, e.g.:
+# rl-conference.cc/RLC/2025/Conference
+# automl.cc/AutoML/2024/Conference

@@ -1,0 +1,19 @@
+# fetched + generated data — regenerate with fetch.py / screen.py
+papers.jsonl
+screened.jsonl
+screened.csv
+gold.csv
+
+__pycache__/
+*.pyc
+.venv/
+.env
+.enrich-cache.json
+
+# your rubric and results — the repo ships criteria.example.md instead
+criteria.md
+ranked.csv
+includes.csv
+maybes.csv
+excludes.csv
+.DS_Store
