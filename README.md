@@ -3,9 +3,6 @@
 Turn a keyword search that returns 20,000 papers into a ranked reading list of
 200, without reading 20,000 abstracts.
 
-Six small scripts, one JSONL file passed between them, and a rubric you write
-yourself. No framework.
-
 ```
 fetch → screen → calibrate → enrich → rank → snowball ⤴
 ```
@@ -35,21 +32,20 @@ python rank.py                          # -> ranked.csv, read from the top
 | `rank.py` | Order the includes by reading priority |
 | `snowball.py` | Walk the citation graph outward from your includes |
 
-Every stage appends and resumes. Interrupt anything; rerun it; nothing is
+Every stage appends and resumes. Interrupt anything, rerun it, nothing is
 refetched or rescreened.
 
 ## criteria.md is the whole product
 
-The scripts are plumbing. Output quality is entirely a function of how
-precisely this file describes what you want. Two rules:
+Output quality is entirely a function of how precisely this file describes
+what you want. Two rules:
 
 **Write include rules as observable properties.** "Reports a head-to-head
 comparison" can be tested against an abstract. "Is relevant to my work"
 cannot.
 
-**Define your load-bearing terms.** The screener applies them literally. A
-vague word is one it will interpret generously, and you won't find out until
-you calibrate.
+**Define your load-bearing terms.** The screener applies them literally, and a
+vague word is one it will read generously.
 
 ## Sources
 
@@ -59,9 +55,8 @@ you calibrate.
 | arXiv | preprints, months early | anything never posted as one |
 | OpenReview | ICLR/NeurIPS/ICML 2023+, incl. rejected | anything older |
 
-A big venue is all of ML, not your topic — ICLR 2026 alone is ~20,000
-submissions. `--require` filters locally; alternation is OR, repeating the
-flag is AND:
+ICLR 2026 alone is ~20,000 submissions, so `--require` filters locally.
+Alternation is OR, repeating the flag is AND:
 
 ```bash
 python fetch.py --venues venues.txt \
@@ -72,7 +67,7 @@ python fetch.py --venues venues.txt \
 It applies to every stream, so run differently-filtered queries as separate
 passes. Rejected submissions are dropped unless you pass `--include-rejected`.
 
-## Calibrate — don't skip this
+## Calibrate
 
 ```bash
 python calibrate.py sample --stratified --n 50
@@ -82,16 +77,12 @@ python calibrate.py score
 
 Use `--stratified` whenever most of the corpus is irrelevant. A uniform sample
 of 50 from a 5%-relevant corpus contains two relevant papers, and recall
-computed on two papers isn't a measurement. Stratified draws across the
-screener's verdicts and reweights each stratum to its true size.
+computed on two papers isn't a measurement.
 
-Recall is the number that matters — precision costs you skimming, recall costs
-you papers you'll never know existed. Below ~0.95, the misses print with the
+Recall is the number that matters. Below ~0.95, the misses print with the
 reason the screener gave, which usually names the criterion that was too
-narrow.
-
-Then do it again with `--seed 1`. A rubric tuned on one sample of 50 has been
-tuned to that sample.
+narrow. Then run it again with `--seed 1` — a rubric tuned on one sample of 50
+has been tuned to that sample.
 
 ## Snowball
 
@@ -101,34 +92,10 @@ python snowball.py --min-links 2 --require '...'
 python screen.py                     # screens only the new arrivals
 ```
 
-Keyword search can't find a paper that describes your idea in other words.
-This one follows citations instead — backwards for the canon your phrases
+Follows citations instead of keywords: backwards for the canon your phrases
 miss, forwards for recent work using different vocabulary. `seed_links` counts
 how many of your includes each paper connects to; sort by it.
 
-With many seeds the top of that list fills with whatever the whole field cites
-(the framework paper, the optimiser, the benchmark suite), so `--require`
-matters here too. **Always pass `--dump`** — the crawl is the expensive part
-and shouldn't be repeated to retune a threshold.
-
-## Gotchas
-
-The three that otherwise cost an afternoon:
-
-- **OpenAlex** gives $1/day free with an account, ~10¢ without. A request is
-  $0.001 and returns 200 records, so cost scales with queries, not papers.
-- **Semantic Scholar's `/paper/search/match`** runs at roughly one request per
-  minute even with a key. Never use it in bulk — resolve by arXiv id or DOI
-  and use the batch endpoint, which takes 500 at once.
-- **arXiv DOIs** (`10.48550/arXiv.NNNN`) aren't indexed by S2 as DOIs. Convert
-  them to arXiv ids or the lookup fails silently.
-
-## What it doesn't do
-
-It reads titles and abstracts, nothing else. A paper that undersells its own
-contribution gets excluded. Keep `maybe` generous and snowball from your
-includes rather than trusting keywords to find everything.
-
-It doesn't write prose, and shouldn't. The `reason` and `why` fields are
-routing signals generated from an abstract. Anything you cite should trace to
-a PDF you opened.
+With many seeds the top of that list fills with whatever the whole field cites,
+so `--require` matters here too. Always pass `--dump` — the crawl is the
+expensive part and shouldn't be repeated to retune a threshold.
