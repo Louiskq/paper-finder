@@ -94,8 +94,7 @@ def parse_response(text, batch):
             row = {"decision": "maybe", "topic": "other",
                    "reason": "PARSE FAILURE - review manually"}
         d = str(row.get("decision", "maybe")).lower().strip()
-        # No abstract means the model judged on a title. It cannot ground a
-        # decision in text it never saw, so don't let it exclude on a guess.
+        # judged on the title alone, so don't let it exclude on a guess
         if p.get("no_abstract") and d == "exclude":
             d, row = "maybe", {**row, "reason": "NO ABSTRACT - title only, "
                                "check by hand: " + str(row.get("reason", ""))[:80]}
@@ -155,8 +154,7 @@ class GeminiBackend:
                 response_schema=RESPONSE_SCHEMA,
                 temperature=0.0,
                 max_output_tokens=8000,
-                # Classification against a fixed rubric: thinking burns output
-                # tokens and latency for no gain here.
+                # fixed rubric, nothing to reason about; thinking just costs tokens
                 thinking_config=self.types.ThinkingConfig(thinking_budget=0),
             ),
         )

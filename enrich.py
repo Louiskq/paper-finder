@@ -47,9 +47,8 @@ def s2_id(pid: str):
 def openalex_match(session, title, key=None):
     """Resolve one title against OpenAlex.
 
-    S2's /paper/search/match is throttled to roughly one request per minute
-    even with a key, which makes it useless for more than a handful. OpenAlex
-    serves the same citation counts on a budget you can actually see.
+    S2's /paper/search/match is ~1 request/minute even with a key, which
+    rules it out for anything but a handful of lookups.
     """
     # commas and pipes are filter syntax in OpenAlex; strip rather than escape
     q = re.sub(r"[,|]", " ", title).strip()
@@ -125,8 +124,7 @@ def main():
             if line.strip():
                 p = json.loads(line)
                 prev = records.get(p["id"])
-                # papers.jsonl is read first and has no decisions; prefer the
-                # screened copy so --decisions has something to filter on
+                # papers.jsonl has no decisions; prefer the screened copy
                 if prev is None or ("decision" in p and "decision" not in prev):
                     records[p["id"]] = p
     todo = [p for p in records.values()

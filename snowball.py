@@ -218,9 +218,11 @@ def to_record(p, direction):
 # --------------------------------------------------------------------------
 
 def matches(rec, patterns) -> bool:
-    """Same idea as fetch.py --require. With many seeds, seed_links surfaces
-    whatever the whole field cites (PPO, Adam, Gym) rather than your topic, so
-    the graph needs a topical filter as much as a keyword search does."""
+    """Same idea as fetch.py --require.
+
+    With many seeds, seed_links surfaces whatever the whole field cites
+    rather than your topic, so the graph needs a topical filter too.
+    """
     if not patterns:
         return True
     hay = f"{rec.get('title') or ''} {rec.get('abstract') or ''}".lower()
@@ -328,8 +330,7 @@ def main():
         elif not matches(rec, patterns):
             skipped["off-topic"] += 1
         elif not rec["abstract"]:
-            # screen.py judges on abstracts; without one it can't. Keep it but
-            # flag it, so you eyeball these by hand rather than losing them.
+            # no abstract, so screen.py can't judge it. keep and flag it
             rec["no_abstract"] = True
             new.append(rec)
         else:

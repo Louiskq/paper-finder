@@ -319,8 +319,7 @@ def main():
                     if not matches(p, patterns):
                         dropped["off-topic"] += 1
                         continue
-                    # screen.py judges on abstracts; OpenAlex is missing ~25% of
-                    # them. Keep but flag, so they get eyeballed not lost.
+                    # openalex is missing ~25% of abstracts. keep, but flag them
                     if not p.get("abstract"):
                         p["no_abstract"] = True
                     seen_ids.add(p["id"])
